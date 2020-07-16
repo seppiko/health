@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.seppiko.health.mappers.ActivityMapper">
+
+  <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
+
+  <resultMap id="resultMap" type="org.seppiko.health.model.ActivityMapperEntity">
+    <result column="createDateTime" jdbcType="TIMESTAMP" property="createDateTime" />
+    <result column="startTime" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="endTime" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="modeName" jdbcType="VARCHAR" property="modeName" />
+  </resultMap>
+
+  <select id="show" resultMap="resultMap">
+    SELECT ac.createDateTime as createDateTime, ac.startTime as startTime,
+    ac.endTime as endTime, m.name as modeName
+    FROM activity ac, mode m
+    WHERE ac.mode = m.mid
+    GROUP BY ac.createDateTime
+    ORDER BY ac.startTime DESC
+  </select>
+
+  <select id="queryByDay" resultMap="resultMap">
+    SELECT ac.createDateTime as createDateTime,
+    DATE_FORMAT(ac.startTime, '%Y-%m-%d') as startTime
+    m.name as modeName, count(*) as count
+    FROM activity ac, mode m
+    WHERE ac.mode = m.mid
+    GROUP BY YEAR(ac.startTime), MONTH(ac.startTime), DAY(ac.startTime)
+    ORDER BY ac.startTime DESC
+    LIMIT 1
+  </select>
+
+  <insert id="addData" useGeneratedKeys="true">
+    INSERT activity
+    (createDateTime, startTime, endTime, mode)
+    VALUES
+    (now(), #{startTime}, #{endTime}, #{mode})
+  </insert>
+
+</mapper>

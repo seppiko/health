@@ -1,0 +1,7 @@
+
+health:
+  datasource:
+    driverClassName: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://10.100.1.2:3306/health?useUnicode=true&characterEncoding=utf-8&serverTimezone=China/Harbin
+    username: root
+    password: toor
